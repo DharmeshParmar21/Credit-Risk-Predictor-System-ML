@@ -98,8 +98,7 @@ streamlit run app.py
 ---
 
 ## Live App
-
-Coming Soon
+https://credit-risk-predictor-system-ml-x293jxyj5cytvhx9pjdivf.streamlit.app/
 
 ---
 
