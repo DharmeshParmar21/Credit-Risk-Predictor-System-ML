@@ -18,13 +18,36 @@ st.set_page_config(
 )
 
 # =========================
-# 🎨 Custom Fintech Styling
+# 🌙 FORCE DARK THEME + UI STYLE
 # =========================
 st.markdown("""
 <style>
-.main {
-    background-color: #0e1117;
+
+/* Global Dark Theme */
+html, body, [class*="css"] {
+    background-color: #0e1117 !important;
+    color: #ffffff !important;
 }
+
+/* Sidebar */
+section[data-testid="stSidebar"] {
+    background-color: #161b22 !important;
+}
+
+/* Inputs */
+input, textarea, select {
+    background-color: #161b22 !important;
+    color: white !important;
+}
+
+/* Buttons */
+button {
+    background-color: #0d6efd !important;
+    color: white !important;
+    border-radius: 6px !important;
+}
+
+/* Cards */
 .card {
     background-color: #161b22;
     padding: 20px;
@@ -32,6 +55,8 @@ st.markdown("""
     text-align: center;
     box-shadow: 0px 2px 10px rgba(0,0,0,0.4);
 }
+
+/* Text styles */
 .metric-title {
     font-size: 14px;
     color: #9aa0a6;
@@ -41,6 +66,7 @@ st.markdown("""
     font-weight: bold;
     color: white;
 }
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -93,37 +119,39 @@ sex = st.radio("Gender", ["male", "female"])
 # =========================
 if st.button("🔍 Evaluate Risk"):
 
-    # Feature Engineering
-    credit_per_month = credit_amount / duration
-    credit_income_proxy = credit_amount / (age + 1)
+    with st.spinner("Analyzing customer risk..."):
 
-    age_group = (
-        "young" if age < 30 else
-        "adult" if age < 45 else
-        "mature" if age < 60 else
-        "senior"
-    )
+        # Feature Engineering
+        credit_per_month = credit_amount / duration
+        credit_income_proxy = credit_amount / (age + 1)
 
-    # DataFrame
-    input_df = pd.DataFrame({
-        "Age": [age],
-        "Sex": [sex],
-        "Job": [job],
-        "Housing": [housing],
-        "Saving accounts": [saving],
-        "Checking account": [checking],
-        "Credit amount": [credit_amount],
-        "Duration": [duration],
-        "Purpose": [purpose],
-        "credit_per_month": [credit_per_month],
-        "credit_income_proxy": [credit_income_proxy],
-        "age_group": [age_group]
-    })
+        age_group = (
+            "young" if age < 30 else
+            "adult" if age < 45 else
+            "mature" if age < 60 else
+            "senior"
+        )
 
-    # Prediction
-    prob = model.predict_proba(input_df)[:, 1][0]
-    pred = int(prob > threshold)
-    risk_percent = int(prob * 100)
+        # DataFrame
+        input_df = pd.DataFrame({
+            "Age": [age],
+            "Sex": [sex],
+            "Job": [job],
+            "Housing": [housing],
+            "Saving accounts": [saving],
+            "Checking account": [checking],
+            "Credit amount": [credit_amount],
+            "Duration": [duration],
+            "Purpose": [purpose],
+            "credit_per_month": [credit_per_month],
+            "credit_income_proxy": [credit_income_proxy],
+            "age_group": [age_group]
+        })
+
+        # Prediction
+        prob = model.predict_proba(input_df)[:, 1][0]
+        pred = int(prob > threshold)
+        risk_percent = int(prob * 100)
 
     st.markdown("---")
 
@@ -163,7 +191,9 @@ if st.button("🔍 Evaluate Risk"):
     else:
         st.success(f"✅ Low Risk Customer ({risk_percent}%)")
 
-    st.progress(risk_percent)
+    st.progress(int(risk_percent))  # FIXED
+
+    st.caption(f"Decision Threshold: {threshold}")  # Added
 
     # =========================
     # 💼 Decision
@@ -197,6 +227,9 @@ if st.button("🔍 Evaluate Risk"):
     if housing == "free":
         reasons.append("No owned assets increases risk")
 
+    if prob > 0.7:
+        reasons.append("Overall model risk score is high")
+
     if not reasons:
         reasons.append("Customer shows stable financial indicators")
 
@@ -213,27 +246,9 @@ if st.button("🔍 Evaluate Risk"):
 st.markdown("---")
 st.markdown(
     """
-    <div style="
-        text-align: center;
-        font-family: 'Segoe UI';
-        color: #9aa0a6;
-        margin-top: 20px;
-    ">
-        <div style="font-size: 16px; font-weight: 600; color: white;">
-            💳 Credit Risk Predictor System
-        </div>
-        <div style="margin-top: 8px;">
-            Prepared by 
-            <span style="
-                font-weight: 700;
-                color: white;
-                background-color: #0d6efd;
-                padding: 5px 12px;
-                border-radius: 6px;
-            ">
-                Dharmesh Parmar
-            </span>
-        </div>
+    <div style="text-align:center; color:#9aa0a6;">
+        💳 Credit Risk Predictor System <br>
+        Prepared by <b style="color:white;">Dharmesh Parmar</b>
     </div>
     """,
     unsafe_allow_html=True
