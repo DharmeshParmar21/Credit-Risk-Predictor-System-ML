@@ -28,7 +28,7 @@ The system is deployed as a **Streamlit-based fintech dashboard**, enabling real
 
 ## App Preview
 
-![Dashboard](Images/Credit Risk Predictor System.png)
+![App Screenshot](Images/app.png)
 
 ---
 
